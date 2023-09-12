@@ -1,0 +1,117 @@
+* { font-family: Jetbrains Mono, monospace; }
+
+:root {
+    /* oxocarbon ftw */
+    --bg: #161616;
+    --bg2: #262626;
+    --fg: #dde1e6;
+    --fg2: #525252;
+    --acc: #ee5396;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+}
+
+nav {
+    display: block;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 1rem;
+}
+
+nav, a, nav a, .subtitle { color: var(--fg2); }
+a:hover, #posts a:hover, .container h3, h3, h2, b { color: var(--acc); }
+nav p { margin: 0; }
+nav li { padding-right: 10px; }
+
+nav ul { 
+    display: flex;
+    list-style-type: none;
+    float: right;
+}
+
+nav ul, ul {
+    color: var(--fg2);  
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#info {
+    /* gotta love css */
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+}
+
+#info p { margin: 0; }
+
+#info img {
+    border-radius: 50%;
+    width: 150px;
+    height: auto;
+    margin-bottom: 30px;
+}
+
+#links {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: auto;
+    width: 80rem;
+}
+
+.container {
+    background-color: var(--bg2);
+    margin: 1rem;
+    padding: 2rem;
+    width: 30rem;
+    height: auto;
+    /* overflow: hidden; */
+}
+
+.container li, #posts li {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+#posts ul {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    margin: 3rem;
+}
+
+#posts a { color: var(--fg); }
+
+h2, h3{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+article p {
+    margin-right: 20rem;
+    margin-left: 20rem;
+    display: inline-block;
+    text-align: justify;
+    justify-content: center;
+}
