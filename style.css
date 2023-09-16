@@ -53,7 +53,7 @@ nav ul, ul {
     font-size: 1.8rem;
 }
 
-#info p { margin: 0; }
+#info p { margin: 0; font-size: 1.2rem }
 
 #info img {
     border-radius: 50%;
@@ -88,6 +88,8 @@ nav ul, ul {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+
+.container ul, a { color: var(--fg) }
 
 #posts ul {
     display: flex;
