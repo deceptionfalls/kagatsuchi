@@ -111,8 +111,9 @@ h2, h3{
 }
 
 article p {
-    margin-right: 20rem;
-    margin-left: 20rem;
+    min-width: 10rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
     display: inline-block;
     text-align: justify;
     justify-content: center;
