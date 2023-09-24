@@ -7,6 +7,7 @@
     --fg: #dde1e6;
     --fg2: #525252;
     --acc: #ee5396;
+    --acc2: #ff7eb6;
 }
 
 body {
@@ -37,6 +38,16 @@ nav ul, ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
+}
+
+article ul {
+    display: block;
+    color: var(--fg);
+    padding: 1rem;
+}
+
+article li {
+    padding-top: 1rem;
 }
 
 #info {
@@ -92,29 +103,54 @@ nav ul, ul {
 .container ul, a { color: var(--fg) }
 
 #posts ul {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    justify-content: center;
-    margin: 3rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  margin: 3rem;
 }
 
 #posts a { color: var(--fg); }
 
 h2, h3{
-    padding-top: 2px;
-    padding-bottom: 2px;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    justify-content: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
 }
 
-article p {
-    min-width: 10rem;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    display: inline-block;
-    text-align: justify;
-    justify-content: center;
+article p, article ul {
+  min-width: 10rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  display: inline-block;
+  text-align: justify;
+  justify-content: center;
+}
+
+code {
+  font-family: monospace;
+  font-size: 16px;
+  color: var(--acc2);
+  background: var(--bg2);
+}
+
+pre code {
+  display: block;
+  background: none;
+  color: var(--fg);
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: scroll;
+  min-width: 100px;
+  padding: 0;
+}
+
+pre {
+  min-width: 10rem;
+  margin-left: 5rem;
+  margin-right: 5rem;
+  background-color: var(--bg2);
 }

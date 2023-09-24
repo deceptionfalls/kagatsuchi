@@ -1,0 +1,285 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>neovim for stupid people</title>
+    <link rel='stylesheet' href='../../style.css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="../../assets/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  </head>
+<body>
+      <nav>
+          <p style="float: left">kagatsuchi</p>
+          <ul>
+              <li><a href='../index.html'>cd ..</a></li>
+          </ul>
+      </nav>
+
+    <article>
+    <h2>Neovim for Stupid People</h1>
+    <h3 class='subtitle'>September 22, 2023</h2>
+    <p>I've been seeing people recently struggling with neovim and maintaining a configuration, lots of people use premade configs like <strong>Nvchad, Astronvim and Lunarvim</strong> and I have seen people complaining with the detriments that come with a premade config, those being the annoyance of removing things that come pre-installed and trying to add new plugins when you're just starting out and have no clue on what you should do. And look, I get it, neovim is hard when you're clueless, and we are all clueless, but instead of just saying "well, stick to a premade configuration, it's easier to use!" or "switch to VSCode, it's good enough", I want to actually give a solution, making your own neovim configuration, from scratch.</p>
+
+    <h3>Why from scratch and not a premade configuration?</h3>
+    <p>Premade configurations take away a crucial part of the vim experience, which is well, getting used to setup everything, tinkering! When you learn how to navigate your configuration and how things works -- sort of -- you can more easily tweak the behaviour of everything, how buffers spawn, what X key does, create vim functions that execute a ton of commands whenever some condition is met, and much more, knowing how the tools you use work gives you the power to fine tune them to your own workflow, even if you don't use neovim for code editing, maybe you're just a writer and like the vim way of doing things and you need a powerful editor to write your articles, as long as you understand the tool, you can make it be whatever you want.</p>
+
+    <p>In this article, I will guide you in creating and teaching the bare minimum of creating a neovim configuration that works fine. We will setup the basics -- includes an LSP, plugin manager, some sane options and the bare minimum of keybinds -- so you can have a solid base and the knowledge to build up your configuration from there, my goal is to make the most neutral base possible so you can turn it into an opinionated mess yourself, sounds fun? So let's begin.</p>
+
+    <h3>Some Assumptions this article makes</h3>
+    <ul>
+        <li>Basic vim knowledge. I assume you know what vim is, you used it for a while and know the basics about editing, this guide is solely on configuring neovim and nothing else, if you want to learn vim itself, the internet is your friend :).</li>
+        <li>You are running the latest version of Neovim -- consult your package manager's way of getting it</li>
+        <li>You are on a unix-like system since I will provide some commands for the shell part of the tutorial for convenience. I don't use windows so if you wanna get neovim setup on windows, you might have to jump through some more hoops, but this should give you a general direction</li>
+        <li>You have git installed and know how to use the ultra bare minimum of commands in it</li>
+        <li>You have a brain</li>
+    </ul>
+
+    <h3>File Structure and init.lua</h3>
+    <p>Go to your <code>~/.config/nvim</code> folder, this is where the magic will happen. Here we will have two core folders, where the important things are stored. First we will create a folder where the vim options, keybinds and plugin list will be, first make a folder called <code>lua</code> and inside it, another folder with whichever name you want, we will name it <code>custom</code>.</p>
+
+    <pre><code>
+        cd ~/.config/nvim
+        mkdir lua
+        mkdir lua/custom
+    </code></pre>
+
+    <p>Now we make other two directories, those will be for plugin specific keybinds and configuration. We will name it <code>after</code> and <code>plugin</code> respectively. <code>after</code> is a folder that's always loaded at the end, so it needs to have that name specifically, while <code>plugin</code> can have any name.</p>
+
+    <pre><code>
+        mkdir after
+        mkdir after/plugin
+    </code></pre>
+
+    <p>A good reason why plugins are stored elsewhere is simply so we can remove individual plugin configuration without breaking everything else, think of your neovim config as a Lego set that you can swap out bricks and pieces for different ones, this is what it means to have a <strong>modular</strong> configuration.</p>
+
+    <p>Now we make a <code>init.lua</code> folder, that will load our <code>custom</code> folder and everything inside it.</p>
+
+    <pre><code>
+        touch init.lua
+    </code></pre>
+
+    <p>And inside <code>init.lua</code> we add</p>
+
+    <pre><code>
+        require("custom")
+    </code></pre>
+
+    <p>Ok, got it? Now we enter the <code>lua/custom</code> folder and inside it we do a similar thing, create an <code>init.lua</code>, this one will load each specific file inside the <code>custom</code> directory, if you ever did HTML before, think of it as your <code>index.html</code>, a file that loads other files and points where they are located.</p>
+
+    <h3>Options</h3>
+    <p>Okay, now we are going to start going through the most important files inside your <code>custom</code> directory, each file will have a purpose and we will add some much needed things in each one of them. First file we are creating is <code>options.lua</code> where some default vim options will be set, the purpose of this file specifically is so we can tweak some default behavior that comes with neovim by default.</p>
+
+    <pre><code>
+        touch options.lua
+    </code></pre>
+
+    <p>Inside that file, we are setting some simple options to make our experience much more bearable.</p>
+
+    <pre><code>
+        vim.opt.clipboard = "unnamedplus" -- use system clipboard
+        vim.opt.complete.opt = {'menu', 'menuone', 'noselect'} -- for completion
+        vim.opt.mouse = 'a' -- use the mouse
+
+        vim.opt.tabstop = 4 -- pressing tab in insert mode equals 4 spaces 
+        vim.opt.softtabstop = 4
+        vim.opt.shiftwidth = 4
+        vim.opt.expandtab = true
+
+        vim.opt.number = true -- line numbers
+
+        vim.opt.wrap = false -- toggle word wrapping off for reading code
+
+        vim.opt.incsearch = true
+        vim.opt.hlsearch = true -- highlight search terms
+        vim.opt.ignorecase = true -- ignore casing when typing search
+        vim.opt.smartcase = true -- show all search results regardless of casing
+
+        vim.g.mapleader	= ' ' -- set our leader key to space, this is crucial for keybindings
+    </code></pre>
+
+    <p>This should be the bare minimum, you can (and should) search online for more options to add to you <code>options.lua</code>, after you are done with it, add it to your <code>init.lua</code> in the <code>custom</code> directory.</p>
+
+    <pre><code>
+        require("custom.options")
+    </code></pre>
+
+    <h3>Keybindings</h3>
+    <p>Now we are gonna add some keybindings. This section will be more theorical since I won't really give you my keybinds -- I don't want you to use vim the way I use, the point of this article is to just give you some of the knowledge you need to make your own stuff --, this is mostly a rundown of how setting keybinds work.</p>
+
+    <p>You know the drill by now, make a <code>keybinds.lua</code> file and open it.</p>
+
+    <p>Let's make an example keybinding, <code>&lt;leader&gt;w</code> to save our current file. It should look like this.</p>
+
+    <pre><code>
+        vim.keymap.set('n', '&lt;leader&gt;w', ':w&lt;CR&gt;') -- save current file
+    </code></pre>
+
+    <p>Let's break it down, first we have <code>vim.keymap.set()</code> which is simply what we use to define a keybind.</p>
+
+    <p>Then, we have <code>'n'</code>, this defines in what mode the keybind can be used, <code>n</code> being Normal Mode, you could do <code>v</code> for Visual Mode as well, and if you want multiple modes you could use a Lua table, i.e. <code>{'n', 'v'}</code> for normal and visual.</p>
+
+    <p>Next we have <code>'&lt;leader&gt;w'</code> which corresponds to what combination of keys are we binding our action to. This can be any keypress, including already mapped ones. <code>&lt;leader&gt;</code> corresponds to our Space key, which was defined in the previous section, when you see <code>&lt;leader&gt;</code>, just know that it is whatever you defined as the leader key.</p>
+
+    <p>Finally we have our action, what the previous key combination will perform when pressed, in this case it's <code>':w'</code> which will save the current file, this can be either a command -- something that has <code>:</code> at the beginning -- or a combination of other keys -- like setting it to <code>10dd</code> to delete 10 lines, for example -- and the <code>&lt;CR&gt;</code> at the end is used only for commands, it indicates a press of confirmation, so you don't need to confirm the command whenever you invoke it with that keybind.</p>
+
+    <p><strong>Tip</strong>: To bind CTRL + something you'd do <code>&lt;C-key&gt;</code>, useful if you ever run out of things to map with leader.</p>
+
+    <p>This should be enough to give you some ideas to create your own keybindings and experiment with your possbilities, try mapping commands you'd do often, or hard-to-remember commands that could easily be mapped to something simple.</p>
+
+    <p>Finally, add it to your <code>init.lua</code> like we did earlier for the <code>options.lua</code> file, you know the drill.</p>
+
+    <h3>Plugin Manager</h3>
+    <p>Now the most crucial part I'd say so, our Plugin Manager, this will help us extend the functionality of neovim with some much needed plugins, and a plugin manager does exactly that, while doing all the heavy lifting for us. Some popular options include <b>Vim-plug, Packer and Lazy.</b></p>
+
+    <p>You can really use anything, doesn't matter much. We will use Packer because it's simply good enough -- even though it's not maintaned anymore -- and we don't need really complex functionalities like lazy loading or whatever, I assume you just want to put whatever you wanna use and it'll work OOTB, so that's what we are doing here.</p>
+
+    <p>Time to install Packer, first, run this command to install Packer</p>
+
+    <pre><code>
+        git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+         ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+    </code></pre>
+
+    <p>Then, as always, make a <code>plugins.lua</code> file, we'll add our Packer code in it.</p>
+
+    <pre><code>
+        vim.cmd [[packadd packer.nvim]]
+
+        return require('packer').startup(function(use)
+            use 'wbthomason/packer.nvim'
+            -- other plugins will go here
+        end)
+    </code></pre>
+
+    <p>Easy, right? With this we can already start adding plugins, the structure is dead simple as well. Wanna add a plugin? Just do <code>use 'author/pluginname'</code>, source your configuration file with the <code>:so</code> command and run <code>:PackerSync</code>, it'll read your plugin list, then it'll perform an install and update of whatever is there.</p>
+
+    <p>Now we are going to add some essential, bare minimum plugins with some specifications on it.</p>
+
+    <pre><code>
+        vim.cmd [[packadd packer.nvim]]
+
+        return require('packer').startup(function(use)
+            use 'wbthomason/packer.nvim'
+
+            use {
+              'nvim-telescope/telescope.nvim',
+              tag = '0.1.2',
+              requires = { -- we can specify dependencies
+                  {'nvim-lua/plenary.nvim'}
+              }
+            }
+
+            use('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'}) -- run a certain command
+        end)
+    </code></pre>
+
+    <p>This is the bare minimum, Treesitter for syntax highlighting, and Telescope for fuzzy finding files and other functionalities, we will add some more later -- when we get to LSP settings. This should be enough for you to understand how to add and remove plugins, and you can add them according to your needs.</p>
+
+    <p><strong>Tip</strong>: you can add an autocommand to automatically update your plugins whenever you save the <code>plugins.lua</code> file, like this:</p>
+
+    <pre><code>
+        vim.cmd([[
+          augroup packer_user_config
+            autocmd!
+            autocmd BufWritePost plugins.lua source &lt;afile&gt; | PackerCompile
+          augroup end
+        ]])
+    </code></pre>
+
+    <p>Don't forget to add your <code>plugins.lua</code> file in your <code>init.lua</code>, it should look like this:</p>
+
+    <pre><code>
+        require('custom.options')
+        require('custom.keybinds')
+        require('custom.plugins')
+    </code></pre>
+
+    <h3>LSP</h3>
+    <p>A Language Server Protocol is in lamest terms just something you use to get code suggestions and other boring crap. If you don't do code, you can literally skip this and have fun, but if you are like me, we need to setup an LSP to get autocompletion and code snippts working inside of neovim. So let's do that.</p>
+
+    <p>Add this to your <code>plugins.lua</code> file, inside of our plugin list:</p>
+
+    <pre><code>
+        use {
+          'VonHeikemen/lsp-zero.nvim',
+          branch = 'v2.x',
+          requires = {
+            -- LSP Support
+            {'neovim/nvim-lspconfig'},             -- Required
+            {'williamboman/mason.nvim'},           -- Optional
+            {'williamboman/mason-lspconfig.nvim'}, -- Optional
+
+            -- Autocompletion
+            {'hrsh7th/nvim-cmp'},     -- Required
+            {'hrsh7th/cmp-nvim-lsp'}, -- Required
+            {'L3MON4D3/LuaSnip'},     -- Required
+          }
+        }
+    </code></pre>
+
+    <p>This is so we can use an LSP, we will be using LSP-Zero simply because it works, it's good enough, that's all that matters, you're free to setup another plugin for that if you want, the whole point is that it's up to you.</p>
+
+    <p>Now we make a file called <code>lsp.lua</code> for some final specific tweaks. As always, add it to your <code>init.lua</code> for it to be loaded.</p>
+
+    <p>In our <code>lsp.lua</code> we add:</p>
+
+    <pre><code>
+        local lsp = require('lsp-zero')
+
+        lsp.preset('recommended')
+        lsp.ensure_installed({
+            -- put any language servers you need here (e.g. pyright or tsserver)
+        })
+
+        local cmp = require('cmp')
+        local cmp_select = {behavior = cmp.SelectBehavior.Select}
+        local cmp_mappings = lsp.defaults.cmp_mappings({
+            -- keybinds for the autocompletion popup
+            ['&lt;C-k&gt;'] = cmp.mapping.select_prev_item(cmp_select), -- select next item
+            ['&lt;C-j&gt;'] = cmp.mapping.select_next_item(cmp_select), -- select prev item
+            ['&lt;CR&gt;'] = cmp.mapping.confirm({ select = true }),    -- confirm
+        })
+
+        lsp.setup_nvim_cmp({
+            mapping = cmp_mappings -- add those keybinds to the lsp config
+        })
+
+        lsp.setup()
+    </code></pre>
+
+    <p>Simple, right? You can extend that and add more stuff later, consult <a href="https://github.com/VonHeikemen/lsp-zero.nvim#quickstart-for-the-impatient">lsp-zero</a> docs for more information on how can you extend it and some of the default keybindings that come with it.</p>
+
+    <h3>Finishing touches</h3>
+    <p>Now we just need to add some plugin specific configuration in <code>after/plugin</code> and we'll be done. Go to <code>after/plugin</code> and make a file for Treesitter, called <code>treesitter.lua</code>, and there put some very basic code to specify what languages always need to be installed:</p>
+
+    <pre><code>
+          require('nvim-treesitter.configs').setup {
+              ensure_installed = {}, -- here you'd add languages like python, c and so on
+              sync_install = false,
+              auto_install = true,
+              ignore_install = {},
+              highlight = {
+                enable = true,
+                additional_vim_regex_highlighting = false,
+              },
+          }
+    </pre></code>
+
+    <h3>Suggestions and Conclusion</h3>
+    <p>Now that we are done, and we have a good enough base to build on top of, you can start tweaking things and getting more opionionated with your configuration, while I tried not to provide things that would make you use vim my way, I want to at least give you some directions if you feel like you are a bit lost after all this setup. So here's some things you can add and things you can configure.</p>
+
+    <ul>
+        <li>Statusbar</li>
+        <li>Git integration</li>
+        <li>File navigation</li>
+        <li>Getting vertical and horizontal splits</li>
+        <li>A colorscheme</li>
+    </ul>
+
+    <p>I hope this is enough to get you started. This isn't a "Turn Neovim into VSCode WOW!!!" sorta guide, it's for the few people that used premade configurations and wanted to have something custom made and didn't knew where to get started, it's a niche use case for a niche use case. I also hope this whole article helped in some way, I might do a follow up on this, adding some more plugins and doing other configurations, one thing I really wanted to talk about was "how some plugins are plain useless, specifically Nvimtree" but that's a story for another day.</p>
+    </article>
+</body>
